@@ -1,0 +1,659 @@
+:root {
+    --btn-red: #ef4444;
+    --btn-blue: #ce23ec;
+    --btn-green: #18c9ec;
+    --btn-orange: #f97316;
+    --btn-yellow: #fbbf24;
+    --btn-grey: #6b7280;
+    --btn-brown: #4ce5af;
+    --cyan-primary: #06b6d4;
+    --cyan-secondary: #0891b2;
+}
+
+html {
+    /* scale type sizes across devices (mobile → tv) */
+    font-size: clamp(14px, 1.6vw, 18px);
+}
+
+#root {
+    min-height: 100vh;
+}
+
+/* App shell: make the main wrapper fill viewport and use column flex layout
+   so header, history section, and footer are stacked and the history
+   area can grow/shrink while the footer (input) remains stable. */
+.app-shell {
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Let the main section grow to fill available space between header and footer */
+.app-shell > section {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 0;
+}
+
+/* Make the panel inside the section expand and let the inner .messages-list scroll */
+.app-shell > section > .glass-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow: visible; /* inner list handles scrolling */
+    min-height: 0;
+}
+
+/* Keep history height stable while allowing messages to scroll */
+.messages-list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+.messages-list::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.messages-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messages-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.messages-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Keep footer/input visible at bottom */
+footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
+}
+
+/* Header / Title styling */
+
+.app-title {
+    font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+    font-weight: 800;
+    background: #ffffff;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    text-shadow: 0 6px 20px rgba(6, 182, 212, 0.06);
+    text-align: center;
+}
+
+.app-subtitle {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.95rem;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.quick-actions-grid > * {
+    width: 100%;
+}
+
+.quick-actions-grid .action-button {
+    width: calc(100% - 1.5rem);
+    margin: 0 0.75rem;
+}
+
+@media (max-width: 640px) {
+    .quick-actions-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .quick-actions-grid .action-button {
+        width: calc(100% - 1rem);
+        margin: 0 0.6rem;
+    }
+}
+
+.action-button {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    gap: 0.5rem;
+    width: auto; /* capsule buttons, not full width */
+    padding: 0.6rem 1rem;
+    border-radius: 9999px; /* pill shape */
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+    justify-content: center;
+    white-space: nowrap;
+    min-width: 120px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 10px 30px rgba(0, 0, 0, 0.35);
+    transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 14px 38px rgba(0, 0, 0, 0.45);
+    filter: brightness(1.05);
+}
+
+/* ensure icon doesn't shrink and scales nicely */
+.action-button svg {
+    flex-shrink: 0;
+    width: 1.1em;
+    height: 1.1em;
+}
+
+/* glass-panel responsive padding */
+.glass-panel {
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.02)
+    );
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    padding: 1.5rem;
+}
+
+/* message input styling to look realistic and expand */
+.message-input {
+    flex: 1;
+    min-width: 0;
+    padding: 1rem 1rem;
+    border-radius: 0.9rem;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.02),
+        rgba(0, 0, 0, 0.2)
+    );
+    color: #fff;
+    font-size: 1.5rem;
+    box-shadow: inset 0 6px 20px rgba(0, 0, 0, 0.6);
+    transition: all 0.18s ease;
+}
+
+/* Ensure input takes available width next to the action button in the footer */
+footer .glass-panel .flex .message-input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Keep input and action button on the same row; prevent wrapping */
+footer .glass-panel .flex.items-center.gap-3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+}
+
+/* Make textarea multi-line and comfortably sized on web and mobile */
+textarea.message-input {
+    /* larger textarea for notepad-like typing */
+    min-height: 16rem; /* larger default */
+    max-height: 40vh; /* allow growth but keep it reasonable */
+    resize: vertical; /* user can expand vertically if desired */
+    line-height: 1.4;
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+    overflow: auto;
+}
+
+/* Slightly larger default on wider screens */
+@media (min-width: 768px) {
+    textarea.message-input {
+        min-height: 4rem;
+    }
+}
+
+.message-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Footer (input) panel: darker, elevated, distinct from history */
+footer .glass-panel {
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.55),
+        rgba(0, 0, 0, 0.45)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.035);
+    padding: 0.9rem;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* History panel: slightly lighter to contrast with footer */
+.app-shell > section > .glass-panel {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.02),
+        rgba(255, 255, 255, 0.005)
+    );
+    /* cyan border + subtle glow to highlight chat history */
+    border: 10px solid rgba(0, 229, 255, 0.22); /* cyan */
+    box-shadow: 0 10px 30px rgba(6, 182, 212, 0.06),
+        0 20px 40px rgba(0, 0, 0, 0.45);
+    padding: 1.25rem;
+}
+
+/* Message cards: increase contrast and soften shadows */
+.message-card {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.03),
+        rgba(255, 255, 255, 0.01)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+/* Make placeholder a touch lighter for readability */
+.message-input::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* compact/action-button small-variant removed (send button was removed) */
+
+.glass-panel {
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.02)
+    );
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    padding: 1.5rem;
+}
+
+.tone-red {
+    background: var(--btn-red);
+}
+
+.tone-blue {
+    background: var(--btn-blue);
+}
+
+.tone-green {
+    background: var(--btn-green);
+}
+
+/* cyan themed button to match chat border */
+.tone-cyan {
+    background: linear-gradient(
+        180deg,
+        var(--cyan-secondary),
+        var(--cyan-primary)
+    );
+    border: 1px solid rgba(6, 182, 212, 0.28);
+}
+
+.tone-cyan:hover {
+    filter: brightness(1.03);
+}
+
+.tone-orange {
+    background: var(--btn-orange);
+}
+
+.tone-yellow {
+    background: var(--btn-yellow);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.tone-grey {
+    background: var(--btn-grey);
+}
+
+.tone-brown {
+    background: var(--btn-brown);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .action-button {
+        padding: 0.55rem 0.9rem;
+        min-width: 0;
+        font-size: 0.85rem;
+        gap: 0.35rem;
+    }
+
+    .action- span {
+        font-size: 0.75rem;
+    }
+
+    .glass-panel {
+        padding: 1rem;
+    }
+}
+
+/* Mobile UX improvements */
+@media (max-width: 640px) {
+    /* Make quick action buttons scroll horizontally instead of wrapping */
+    .grid.grid-cols-1 {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, max-content);
+        gap: 0.6rem;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Reduce header sizes to fit narrow screens */
+    .app-title {
+        font-size: 1.4rem;
+        line-height: 1.05;
+    }
+
+    .app-subtitle {
+        font-size: 0.85rem;
+    }
+
+    /* History panel: constrain height, use column flex so inner list can scroll */
+    section > .glass-panel {
+        max-height: calc(60vh - 120px);
+        display: flex;
+        flex-direction: column;
+        padding: 0.9rem;
+        overflow: visible; /* inner .messages-list handles scrolling */
+    }
+
+    /* Ensure message cards take full width and wrap properly */
+    .message-card {
+        width: 100%;
+        box-sizing: border-box;
+        word-break: break-word;
+        padding: 0.9rem 1rem;
+    }
+
+    /* Footer safe area and smaller paddings */
+    footer {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .glass-panel.flex {
+        padding: 0.9rem;
+    }
+
+    /* Make message input and action button align nicely on small screens */
+    .glass-panel .flex.items-center.gap-3 {
+        gap: 0.6rem;
+    }
+
+    /* Slightly increase touch targets for action buttons */
+    .action-button {
+        padding: 0.6rem 0.9rem;
+        border-radius: 10rem;
+    }
+}
+
+/* Call Person dropdown */
+.relative {
+    position: relative;
+}
+
+.call-dropdown {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 160px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    z-index: 40;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+.call-dropdown.dark {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+
+.call-dropdown.light {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #0b1220;
+}
+
+.call-option {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.call-dropdown.dark .call-option:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.call-dropdown.light .call-option:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+/* Message card styling: force wrapping and prevent horizontal growth */
+.messages-list {
+    min-width: 0; /* allow flex children to shrink instead of overflowing */
+}
+
+.glass-panel,
+.messages-list,
+.message-card {
+    min-width: 0; /* defensive for flexible layouts */
+}
+
+.message-card {
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1rem 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+    width: 100%; /* don't exceed container width */
+    max-width: 100%;
+}
+
+.message-text {
+    overflow-wrap: anywhere; /* break long words/URLs */
+    word-break: break-word;
+    white-space: pre-wrap; /* preserve newlines and wrap */
+    hyphens: auto;
+
+}
+
+/* Live preview specific adjustments: make draft text very large */
+.live-message-text {
+    font-weight: 800;
+    font-size: clamp(1.75rem, 4.5vw, 3.2rem);
+    line-height: 1.02;
+    margin-top: 0.5rem;
+    color: #ffffff;
+    text-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Slightly reduce on very small screens */
+@media (max-width: 640px) {
+    .live-message-text {
+        font-size: 1.4rem;
+    }
+}
+
+/* Make message content visually prominent — H2-like size */
+.message-text {
+    font-size: clamp(2rem, 2.2vw, 1.75rem);
+    font-weight: 700;
+    margin: 0.25rem 0 0 0;
+    line-height: 1.15;
+}
+
+.message-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* status badge */
+.message-status {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 999px;
+    text-transform: capitalize;
+    letter-spacing: 0.02em;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.message-status.sent {
+    background: rgba(6, 182, 212, 0.08);
+    color: var(--cyan-primary);
+    border-color: rgba(6, 182, 212, 0.18);
+}
+
+.message-status.delivered {
+    background: rgba(96, 165, 250, 0.06);
+    color: #60a5fa;
+    border-color: rgba(96, 165, 250, 0.16);
+}
+
+.message-status.read {
+    background: rgba(16, 185, 129, 0.06);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.16);
+}
+
+.message-status.received {
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Sent messages - default (non-latest) styling */
+.sent-message {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.04),
+        rgba(255, 255, 255, 0.02)
+    );
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+.sent-message .message-sender {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.sent-message .message-time {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.sent-message .message-text {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Latest (newest) message gets the cyan highlight */
+.latest-message {
+    background: linear-gradient(
+        135deg,
+        rgba(6, 182, 212, 0.18),
+        rgba(8, 145, 178, 0.12)
+    );
+    border-color: rgba(6, 182, 212, 0.34);
+}
+
+.latest-message .message-sender {
+    color: var(--cyan-primary);
+}
+
+.latest-message .message-time {
+    color: rgba(6, 182, 212, 0.8);
+}
+
+.latest-message .message-text {
+    color: #ffffff;
+}
+
+/* Received messages - Default style */
+.received-message {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.02)
+    );
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.received-message .message-sender {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.received-message .message-time {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.received-message .message-text {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+@media (min-width: 1024px) {
+    .action-button {
+        padding: 0.8rem 1.3rem;
+        font-size: 1rem;
+        min-width: 140px;
+    }
+
+    .glass-panel {
+        padding: 1.75rem;
+    }
+}
+
+@media (min-width: 1600px) {
+    /* TV / very large screens — scale things up */
+    html {
+        font-size: clamp(16px, 1.2vw, 20px);
+    }
+
+    .action-button {
+        padding: 1rem 1.6rem;
+        font-size: 1.05rem;
+        min-width: 180px;
+    }
+
+    .glass-panel {
+        padding: 2.25rem;
+    }
+}
