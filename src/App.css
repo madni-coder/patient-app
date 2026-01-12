@@ -13,10 +13,26 @@
 html {
     /* scale type sizes across devices (mobile → tv) */
     font-size: clamp(14px, 1.6vw, 18px);
+    /* Prevent iOS Safari from zooming in on input focus */
+    -webkit-text-size-adjust: 100%;
 }
 
 #root {
     min-height: 100vh;
+}
+
+/* Mobile-specific: Adjust viewport for keyboard */
+@media (max-width: 768px) {
+    html,
+    body {
+        height: 100%;
+        overflow: auto;
+    }
+
+    /* Ensure smooth scrolling on mobile */
+    html {
+        scroll-behavior: smooth;
+    }
 }
 
 /* App shell: make the main wrapper fill viewport and use column flex layout
@@ -84,6 +100,20 @@ footer {
     z-index: 30;
 }
 
+/* Mobile-specific: Ensure footer stays visible when keyboard opens */
+@media (max-width: 768px) {
+    footer {
+        position: relative; /* Changed from sticky on mobile */
+        bottom: auto;
+    }
+
+    /* Ensure the textarea is accessible above keyboard */
+    footer .glass-panel {
+        margin-bottom: 0;
+        padding-bottom: max(0.9rem, env(safe-area-inset-bottom));
+    }
+}
+
 /* Header / Title styling */
 
 .app-title {
@@ -105,29 +135,36 @@ footer {
 }
 
 .quick-actions-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.75rem;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 0;
+}
+
+.quick-actions-grid::-webkit-scrollbar {
+    height: 6px;
+}
+
+.quick-actions-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.quick-actions-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 99spx;
 }
 
 .quick-actions-grid > * {
-    width: 100%;
+    flex: 0 0 auto;
 }
 
 .quick-actions-grid .action-button {
-    width: calc(100% - 1.5rem);
-    margin: 0 0.75rem;
-}
-
-@media (max-width: 640px) {
-    .quick-actions-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .quick-actions-grid .action-button {
-        width: calc(100% - 1rem);
-        margin: 0 0.6rem;
-    }
+    width: auto;
+    margin: 0;
+    min-width: 50px;
+    white-space: nowrap;
 }
 
 .action-button {
@@ -164,6 +201,67 @@ footer {
     flex-shrink: 0;
     width: 1.1em;
     height: 1.1em;
+}
+
+/* Copy key button and feedback */
+.room-key-pill {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    max-width: 22rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copy-key-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(180deg, #06b6d4, #0891b2);
+    color: white;
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(6, 182, 212, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+/* Increase tappable area on small screens */
+@media (max-width: 640px) {
+    .copy-key-btn {
+        width: 46px;
+        height: 46px;
+    }
+
+    .room-key-pill {
+        padding: 0.45rem 0.8rem;
+    }
+}
+
+.copy-key-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(6, 182, 212, 0.2);
+}
+
+.copy-feedback {
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 160ms ease, transform 160ms ease;
+    font-size: 0.8rem;
+    color: #9ae6b4;
+    font-weight: 700;
+}
+
+.copy-feedback.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* glass-panel responsive padding */
@@ -257,22 +355,20 @@ footer .glass-panel {
         rgba(255, 255, 255, 0.02),
         rgba(255, 255, 255, 0.005)
     );
-    /* cyan border + subtle glow to highlight chat history */
-    border: 10px solid rgba(0, 229, 255, 0.22); /* cyan */
-    box-shadow: 0 10px 30px rgba(6, 182, 212, 0.06),
-        0 20px 40px rgba(0, 0, 0, 0.45);
+    /* thin border with subtle styling */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
     padding: 1.25rem;
 }
 
-/* Message cards: increase contrast and soften shadows */
+/* Message cards: simple note app style, no borders */
 .message-card {
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.03),
-        rgba(255, 255, 255, 0.01)
-    );
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 0;
+    box-shadow: none;
 }
 
 /* Make placeholder a touch lighter for readability */
@@ -480,14 +576,15 @@ footer .glass-panel {
 }
 
 .message-card {
-    border-radius: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 1rem 1.25rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    transition: none;
     box-sizing: border-box;
     width: 100%; /* don't exceed container width */
     max-width: 100%;
+    background: transparent;
 }
 
 .message-text {
@@ -495,7 +592,6 @@ footer .glass-panel {
     word-break: break-word;
     white-space: pre-wrap; /* preserve newlines and wrap */
     hyphens: auto;
-
 }
 
 /* Live preview specific adjustments: make draft text very large */
@@ -524,8 +620,8 @@ footer .glass-panel {
 }
 
 .message-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: none;
+    box-shadow: none;
 }
 
 /* status badge */
