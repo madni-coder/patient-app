@@ -13,26 +13,10 @@
 html {
     /* scale type sizes across devices (mobile → tv) */
     font-size: clamp(14px, 1.6vw, 18px);
-    /* Prevent iOS Safari from zooming in on input focus */
-    -webkit-text-size-adjust: 100%;
 }
 
 #root {
     min-height: 100vh;
-}
-
-/* Mobile-specific: Adjust viewport for keyboard */
-@media (max-width: 768px) {
-    html,
-    body {
-        height: 100%;
-        overflow: auto;
-    }
-
-    /* Ensure smooth scrolling on mobile */
-    html {
-        scroll-behavior: smooth;
-    }
 }
 
 /* App shell: make the main wrapper fill viewport and use column flex layout
@@ -100,20 +84,6 @@ footer {
     z-index: 30;
 }
 
-/* Mobile-specific: Ensure footer stays visible when keyboard opens */
-@media (max-width: 768px) {
-    footer {
-        position: relative; /* Changed from sticky on mobile */
-        bottom: auto;
-    }
-
-    /* Ensure the textarea is accessible above keyboard */
-    footer .glass-panel {
-        margin-bottom: 0;
-        padding-bottom: max(0.9rem, env(safe-area-inset-bottom));
-    }
-}
-
 /* Header / Title styling */
 
 .app-title {
@@ -134,58 +104,96 @@ footer {
     font-size: 0.95rem;
 }
 
+/* Header top layout: left title, centered room status, right action (copy) */
+.header-top {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.header-left .app-title {
+    text-align: left;
+    margin: 0;
+}
+
+.header-center {
+    justify-self: center;
+    text-align: center;
+}
+
+.header-right {
+    justify-self: end;
+}
+
+.copy-link-button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: inherit;
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.copy-link-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.room-id {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
 .quick-actions-grid {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
     flex-wrap: nowrap;
-    gap: 0.5rem;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 0.5rem 0;
-}
-
-.quick-actions-grid::-webkit-scrollbar {
-    height: 6px;
-}
-
-.quick-actions-grid::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.quick-actions-grid::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 99spx;
+    padding: 0.25rem 0.5rem;
 }
 
 .quick-actions-grid > * {
-    flex: 0 0 auto;
+    width: auto;
 }
 
 .quick-actions-grid .action-button {
     width: auto;
     margin: 0;
-    min-width: 50px;
-    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .quick-actions-grid {
+        gap: 0.6rem;
+        padding: 0.15rem 0.5rem;
+    }
+
+    .action-button {
+        width: 40px;
+        height: 40px;
+        padding: 0.25rem;
+    }
 }
 
 .action-button {
     display: inline-flex;
     align-items: center;
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    gap: 0.5rem;
-    width: auto; /* capsule buttons, not full width */
-    padding: 0.6rem 1rem;
-    border-radius: 9999px; /* pill shape */
-    color: #ffffff;
-    font-weight: 600;
-    text-align: center;
     justify-content: center;
-    white-space: nowrap;
-    min-width: 120px;
+    width: 44px;
+    height: 44px;
+    padding: 0.35rem; /* small internal padding so icon centers nicely */
+    border-radius: 9999px; /* circular */
+    color: #ffffff;
+    text-align: center;
+    min-width: 44px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 10px 30px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
     transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
 }
 
@@ -199,69 +207,8 @@ footer {
 /* ensure icon doesn't shrink and scales nicely */
 .action-button svg {
     flex-shrink: 0;
-    width: 1.1em;
-    height: 1.1em;
-}
-
-/* Copy key button and feedback */
-.room-key-pill {
-    background: rgba(255, 255, 255, 0.06);
-    padding: 0.35rem 0.6rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    max-width: 22rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.copy-key-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    background: linear-gradient(180deg, #06b6d4, #0891b2);
-    color: white;
-    border-radius: 10px;
-    border: none;
-    box-shadow: 0 8px 20px rgba(6, 182, 212, 0.14),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    cursor: pointer;
-    transition: transform 120ms ease, box-shadow 120ms ease;
-}
-
-/* Increase tappable area on small screens */
-@media (max-width: 640px) {
-    .copy-key-btn {
-        width: 46px;
-        height: 46px;
-    }
-
-    .room-key-pill {
-        padding: 0.45rem 0.8rem;
-    }
-}
-
-.copy-key-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 32px rgba(6, 182, 212, 0.2);
-}
-
-.copy-feedback {
-    opacity: 0;
-    transform: translateY(-4px);
-    transition: opacity 160ms ease, transform 160ms ease;
-    font-size: 0.8rem;
-    color: #9ae6b4;
-    font-weight: 700;
-}
-
-.copy-feedback.visible {
-    opacity: 1;
-    transform: translateY(0);
+    width: 1.3rem;
+    height: 1.3rem;
 }
 
 /* glass-panel responsive padding */
@@ -337,38 +284,17 @@ textarea.message-input {
 }
 
 /* Footer (input) panel: darker, elevated, distinct from history */
-footer .glass-panel {
-    background: linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0.55),
-        rgba(0, 0, 0, 0.45)
-    );
-    border: 1px solid rgba(255, 255, 255, 0.035);
-    padding: 0.9rem;
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
-}
 
 /* History panel: slightly lighter to contrast with footer */
-.app-shell > section > .glass-panel {
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.02),
-        rgba(255, 255, 255, 0.005)
-    );
-    /* thin border with subtle styling */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
-    padding: 1.25rem;
-}
 
-/* Message cards: simple note app style, no borders */
+/* Message cards: minimal styling (remove heavy backgrounds, borders, shadows) */
 .message-card {
     background: transparent;
     border: none;
-    border-radius: 0;
-    padding: 0;
-    margin-bottom: 0;
     box-shadow: none;
+    padding: 0;
+    border-radius: 0.75rem;
+    width: 100%;
 }
 
 /* Make placeholder a touch lighter for readability */
@@ -576,15 +502,14 @@ footer .glass-panel {
 }
 
 .message-card {
-    border-radius: 0;
+    /* keep a small radius but otherwise minimal */
+    border-radius: 0.75rem;
     border: none;
     padding: 0;
     box-shadow: none;
-    transition: none;
     box-sizing: border-box;
-    width: 100%; /* don't exceed container width */
+    width: 100%;
     max-width: 100%;
-    background: transparent;
 }
 
 .message-text {
@@ -635,30 +560,6 @@ footer .glass-panel {
     border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.message-status.sent {
-    background: rgba(6, 182, 212, 0.08);
-    color: var(--cyan-primary);
-    border-color: rgba(6, 182, 212, 0.18);
-}
-
-.message-status.delivered {
-    background: rgba(96, 165, 250, 0.06);
-    color: #60a5fa;
-    border-color: rgba(96, 165, 250, 0.16);
-}
-
-.message-status.read {
-    background: rgba(16, 185, 129, 0.06);
-    color: #10b981;
-    border-color: rgba(16, 185, 129, 0.16);
-}
-
-.message-status.received {
-    background: rgba(255, 255, 255, 0.03);
-    color: rgba(255, 255, 255, 0.7);
-    border-color: rgba(255, 255, 255, 0.06);
-}
-
 /* Sent messages - default (non-latest) styling */
 .sent-message {
     background: linear-gradient(
@@ -681,49 +582,7 @@ footer .glass-panel {
     color: rgba(255, 255, 255, 0.9);
 }
 
-/* Latest (newest) message gets the cyan highlight */
-.latest-message {
-    background: linear-gradient(
-        135deg,
-        rgba(6, 182, 212, 0.18),
-        rgba(8, 145, 178, 0.12)
-    );
-    border-color: rgba(6, 182, 212, 0.34);
-}
-
-.latest-message .message-sender {
-    color: var(--cyan-primary);
-}
-
-.latest-message .message-time {
-    color: rgba(6, 182, 212, 0.8);
-}
-
-.latest-message .message-text {
-    color: #ffffff;
-}
-
-/* Received messages - Default style */
-.received-message {
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.05),
-        rgba(255, 255, 255, 0.02)
-    );
-    border-color: rgba(255, 255, 255, 0.08);
-}
-
-.received-message .message-sender {
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.received-message .message-time {
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.received-message .message-text {
-    color: rgba(255, 255, 255, 0.85);
-}
+/* Latest message styling handled above (neutralized) */
 
 @media (min-width: 1024px) {
     .action-button {
