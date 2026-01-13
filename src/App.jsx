@@ -195,7 +195,7 @@ function App() {
     const copyLink = useCallback(async () => {
         if (!chatId) return;
         try {
-            await navigator.clipboard.writeText(chatId);
+            await navigator.clipboard.writeText(`?room=${chatId}`);
         } catch (err) {
             console.error("Copy failed", err);
         }
@@ -225,12 +225,7 @@ function App() {
                                         🔴 Disconnected
                                     </span>
                                 )}
-                                {chatId && (
-                                    <span className="ml-2">
-                                        Room:{" "}
-                                        
-                                    </span>
-                                )}
+                                {chatId && <span className="ml-2">Room: </span>}
                             </p>
                         </div>
 
@@ -242,7 +237,7 @@ function App() {
                                 disabled={!chatId}
                                 title={chatId ? "Copy room id" : "No room"}
                             >
-                                <FiCopy className="h-5 w-5 ml-2" />
+                                <FiCopy className="h-8 w-8 ml-2" />
                             </button>
                         </div>
                     </div>
