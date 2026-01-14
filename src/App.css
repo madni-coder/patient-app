@@ -136,7 +136,7 @@ footer {
 .quick-actions-container {
     overflow: visible;
     position: relative;
-    padding-bottom: 12rem;
+    padding-bottom: 1rem;
 }
 
 .quick-actions-grid {

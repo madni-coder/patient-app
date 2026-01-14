@@ -57,6 +57,12 @@ function App() {
         try {
             const data = latestMessage;
 
+            if (data.type === "cleared") {
+                setMessages([]);
+                setDraft("");
+                return;
+            }
+
             if (data.type === "history" && Array.isArray(data.messages)) {
                 const incoming = data.messages
                     .slice()
@@ -148,6 +154,26 @@ function App() {
         setMessages([]);
         setDraft("");
     };
+
+    const clearChatOnServer = useCallback(async () => {
+        // Always clear local UI immediately for responsiveness
+        clearAll();
+
+        if (!chatId) return;
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/chat/${chatId}`, {
+                method: "DELETE",
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || "Failed to clear chat");
+            }
+        } catch (err) {
+            console.error("Failed to clear chat on server:", err);
+        }
+    }, [chatId]);
 
     const sendToBackend = useCallback(
         async (text, isFinal = false) => {
@@ -321,7 +347,7 @@ function App() {
                                             className={`${color} action-button w-full`}
                                             onClick={() =>
                                                 action === "clear"
-                                                    ? clearAll()
+                                                    ? clearChatOnServer()
                                                     : (pushMessage(
                                                           label === "Water"
                                                               ? "Paani Do"
